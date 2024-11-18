@@ -1,0 +1,83 @@
+<header>
+    <div class="header-container">
+        <a href="home.php" class="logo">Anime World</a>
+        <nav>
+            <a href="home.php">Home</a>
+            <a href="top-anime.php">Top Anime</a>
+            <a href="genres.php">Genres</a>
+            <!-- Add a Producers link in the header navigation -->
+        <a href="producer.php?name=toei-animation">Toei Animation</a>
+        <a href="producer.php?name=madhouse">Madhouse</a>
+        </nav>
+        <!-- Example Genre Section in home.php -->
+<div class="genre-list">
+    <h2>Popular Genres</h2>
+    <ul>
+        <li><a href="genre.php?name=action&page=1">Action</a></li>
+        <li><a href="genre.php?name=shounen&page=1">Shounen</a></li>
+        <li><a href="genre.php?name=romance&page=1">Romance</a></li>
+        <li><a href="genre.php?name=adventure&page=1">Adventure</a></li>
+        <li><a href="genre.php?name=fantasy&page=1">Fantasy</a></li>
+    </ul>
+</div>
+
+        <div class="search-container">
+            <form id="search-form" action="search.php" method="GET">
+                <input 
+                    type="text" 
+                    id="search-bar" 
+                    name="q" 
+                    placeholder="Search for anime..." 
+                    autocomplete="off" 
+                />
+                <button type="submit" id="search-button">Search</button>
+            </form>
+            <div id="search-suggestions" class="suggestions-box"></div>
+        </div>
+    </div>
+    
+</header>
+
+<script>
+    const searchBar = document.getElementById("search-bar");
+    const suggestionsBox = document.getElementById("search-suggestions");
+    const searchForm = document.getElementById("search-form");
+
+    searchBar.addEventListener("input", async function () {
+        const query = searchBar.value.trim();
+        if (query.length < 2) {
+            suggestionsBox.style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/v2/hianime/search/suggestion?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            if (data.success && data.data.suggestions.length > 0) {
+                suggestionsBox.innerHTML = data.data.suggestions.map(suggestion => `
+                    <a href="anime-info.php?animeId=${suggestion.id}" class="suggestion-item">
+                        <img src="${suggestion.poster}" alt="${suggestion.name}" />
+                        <div>
+                            <strong>${suggestion.name}</strong>
+                            <p>${suggestion.moreInfo.join(", ")}</p>
+                        </div>
+                    </a>
+                `).join("");
+                suggestionsBox.style.display = "block";
+            } else {
+                suggestionsBox.innerHTML = "<p class='no-suggestions'>No suggestions found</p>";
+                suggestionsBox.style.display = "block";
+            }
+        } catch (error) {
+            console.error("Error fetching suggestions:", error);
+        }
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!searchForm.contains(e.target) && !suggestionsBox.contains(e.target)) {
+            suggestionsBox.style.display = "none";
+        }
+    });
+</script>
