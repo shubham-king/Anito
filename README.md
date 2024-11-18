@@ -21,7 +21,7 @@ A powerful and customizable video streaming platform to watch anime episodes, co
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/Aniwatch/anime-streaming-platform.git
+   git clone https://github.com/Aniwatch/
    ```
 
 2. Navigate to the project directory:
