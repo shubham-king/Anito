@@ -28,8 +28,10 @@ $introStart = $data['data']['intro']['start']; // Intro start time
 $introEnd = $data['data']['intro']['end']; // Intro end time
 $outroStart = $data['data']['outro']['start']; // Outro start time
 $outroEnd = $data['data']['outro']['end']; // Outro end time
+include 'header.html';
 ?>
 
+<!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,42 +41,115 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        #player-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-        }
+        /* General styles for the page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
 
-        #video-player {
-            width: 100%;
-            height: 500px;
-        }
+/* Main container */
+main.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
 
-        .subtitles-container a {
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 5px;
-        }
+/* Video Player */
+#player-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    background: #333;
+    padding: 10px;
+    border-radius: 8px;
+}
 
-        .subtitles-container a:hover {
-            background-color: #45a049;
-        }
+#video-player {
+    width: 100%;
+    height: 500px;
+    border-radius: 8px;
+}
 
-        /* Subtitle overlay styling */
-        .subtitle-overlay {
-            position: absolute;
-            bottom: 50px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.5em;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-            z-index: 9999;
-        }
+.subtitle-overlay {
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Subtitle controls */
+.subtitles-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.subtitles-container a {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.subtitles-container a:hover {
+    background-color: #45a049;
+}
+
+/* Page Heading */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #video-player {
+        height: 400px; /* Smaller video player on mobile */
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Adjust heading size for smaller screens */
+    }
+
+    /* Subtitle controls */
+    .subtitles-container a {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+
+    .subtitle-overlay {
+        font-size: 1.2em; /* Smaller subtitle font for mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    main.container {
+        padding: 10px;
+    }
+
+    #video-player {
+        height: 300px; /* Smaller video player on very small screens */
+    }
+
+    h1 {
+        font-size: 1.2rem; /* Further reduce heading size */
+    }
+
+    .subtitle-overlay {
+        font-size: 1em; /* Further reduce subtitle font */
+    }
+}
 
     </style>
 </head>
@@ -92,10 +167,12 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         <!-- Subtitle overlay (inside player) -->
         <div id="next-subtitle" class="subtitle-overlay"></div>
     </section>
-   <center>WELCOME TO SIDDHARTHA ANIME SITE <br> SITE IS IN DEVELOPMENT</center>
+
+    <p>WELCOME TO SIDDHARTHA ANIME SITE <br> SITE IS IN DEVELOPMENT</p>
 </main>
 
 <script>
+    // Video Player & Subtitle Sync Script
     let video = document.getElementById('video-player');
     let currentCategory = '<?= htmlspecialchars($category) ?>'; // 'sub' or 'dub'
     let currentEpisodeId = '<?= htmlspecialchars($episodeId) ?>';
@@ -105,17 +182,14 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
     let introEnd = <?= $introEnd ?>;
     let outroStart = <?= $outroStart ?>;
     let outroEnd = <?= $outroEnd ?>;
-
     let subtitles = <?= json_encode($subtitles) ?>; // Available subtitles
     let currentSubtitleTrack = null;
 
-    // Function to update video source
     function updateVideoSource(url) {
         if (hls) {
-            hls.destroy(); // Destroy previous HLS instance if it exists
+            hls.destroy();
         }
 
-        // Initialize the HLS.js player
         if (Hls.isSupported()) {
             hls = new Hls();
             hls.loadSource(url);
@@ -124,11 +198,9 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
                 video.play();
             });
 
-            // Enable subtitle rendering if available
             hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED, function(event, data) {
-                console.log('Subtitle tracks updated:', data);
                 if (data.subtitleTracks.length > 0) {
-                    currentSubtitleTrack = 0; // Set the first subtitle track as default (English)
+                    currentSubtitleTrack = 0;
                     hls.subtitleTrack = currentSubtitleTrack;
                 }
             });
@@ -140,7 +212,6 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         }
     }
 
-    // Function to fetch subtitles and update display
     function fetchSubtitles(subtitles) {
         if (subtitles && subtitles.length > 0) {
             subtitles.forEach(sub => {
@@ -155,9 +226,8 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         }
     }
 
-    // Display subtitles inside the player
     function displaySubtitles(vttData) {
-        const subtitleOverlay = document.getElementById('subtitle-overlay');
+        const subtitleOverlay = document.getElementById('next-subtitle');
         const currentTime = video.currentTime;
         const cue = getCueFromVtt(vttData, currentTime);
 
@@ -168,7 +238,6 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         }
     }
 
-    // Extract subtitle cue at a given time from VTT file
     function getCueFromVtt(vttData, currentTime) {
         const cues = vttData.split('\n\n');
         for (let i = 0; i < cues.length; i++) {
@@ -185,7 +254,6 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         return null;
     }
 
-    // Convert VTT time format to seconds
     function parseVttTime(vttTime) {
         const timeParts = vttTime.split(':');
         const minutes = parseFloat(timeParts[0]) * 60;
@@ -193,13 +261,11 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         return minutes + seconds;
     }
 
-    // Function to update current time and check for intro/outro
     function updateCurrentTime() {
         const currentTime = video.currentTime;
         syncSubtitles(currentTime);
     }
 
-    // Sync subtitles to the current time
     function syncSubtitles(currentTime) {
         let nextSubtitle = 'None';
         for (let i = 0; i < subtitles.length; i++) {
@@ -218,13 +284,13 @@ $outroEnd = $data['data']['outro']['end']; // Outro end time
         }
     }
 
-    // Initialize video with the current episode source
     updateVideoSource('<?= $videoUrl ?>');
-    fetchSubtitles(subtitles); // Pass subtitles to the player
-
-    // Update current time and subtitle every time the video updates
+    fetchSubtitles(subtitles);
     video.addEventListener('timeupdate', updateCurrentTime);
 </script>
 
+<?php include 'footer.html'; ?>
+
 </body>
 </html>
+

@@ -33,25 +33,28 @@ $relatedAnimes = $data['data']['relatedAnimes'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($anime['name']) ?> - Anime Info</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="infostyle.css">  <!-- Include your CSS file -->
+    <style>
+        
+    </style>
 </head>
 <body>
 
 <main class="container">
     <!-- Anime Details -->
-    <section class="section">
-        <h2><?= htmlspecialchars($anime['name']) ?></h2>
+    <section class="section anime-details">
+        <h2 class="anime-title"><?= htmlspecialchars($anime['name']) ?></h2>
         <div class="anime-info">
-            <img src="<?= $anime['poster'] ?>" alt="<?= htmlspecialchars($anime['name']) ?>">
-            <div>
+            <div class="anime-poster">
+                <img src="<?= $anime['poster'] ?>" alt="<?= htmlspecialchars($anime['name']) ?>">
+            </div>
+            <div class="anime-meta">
                 <p><strong>Type:</strong> <?= $anime['stats']['type'] ?></p>
                 <p><strong>Rating:</strong> <?= $anime['stats']['rating'] ?></p>
                 <p><strong>Quality:</strong> <?= $anime['stats']['quality'] ?></p>
                 <p><strong>Duration:</strong> <?= $anime['stats']['duration'] ?></p>
                 <p><strong>Episodes:</strong> Sub: <?= $anime['stats']['episodes']['sub'] ?> | Dub: <?= $anime['stats']['episodes']['dub'] ?></p>
                 <p><strong>Description:</strong> <?= htmlspecialchars($anime['description']) ?></p>
-
-                <!-- Link to Streaming Page -->
                 <a href="streaming.php?animeId=<?= $animeId ?>" class="watch-btn">Watch Episodes</a>
             </div>
         </div>
@@ -59,7 +62,7 @@ $relatedAnimes = $data['data']['relatedAnimes'];
     
 
     <!-- Recommended Animes -->
-    <section class="section">
+    <section class="section recommended-animes">
         <h2>Recommended Animes</h2>
         <div class="anime-grid">
             <?php foreach ($recommendedAnimes as $anime): ?>
@@ -74,7 +77,7 @@ $relatedAnimes = $data['data']['relatedAnimes'];
     </section>
 
     <!-- Related Animes -->
-    <section class="section">
+    <section class="section related-animes">
         <h2>Related Animes</h2>
         <div class="anime-grid">
             <?php foreach ($relatedAnimes as $anime): ?>

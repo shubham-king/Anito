@@ -32,12 +32,16 @@ foreach ($episodes as $episode) {
 ?>
 
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Streaming - <?= htmlspecialchars($animeId) ?></title>
-    <link rel="stylesheet" href="streaming.css">
+    <link rel="stylesheet" href="streamingstyle.css">
+    <style>
+        
+    </style>
 </head>
 <body>
 
@@ -80,3 +84,4 @@ foreach ($episodes as $episode) {
 
 </body>
 </html>
+

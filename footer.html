@@ -1,3 +1,161 @@
+<html>
+    <head>
+        <style>
+            /* Footer Styles */
+footer {
+    background: #111;
+    color: #fff;
+    padding: 30px 0;
+    text-align: center;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-container p {
+    font-size: 1rem;
+    margin: 0;
+    color: #aaa;
+}
+
+.footer-container a {
+    color: #e91e63;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.footer-container a:hover {
+    color: #fff;
+}
+
+footer nav {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+footer nav a {
+    font-size: 1rem;
+    padding: 10px;
+    color: #fff;
+    transition: background 0.3s, color 0.3s;
+    border-radius: 4px;
+}
+
+footer nav a:hover {
+    background: #e91e63;
+    color: #fff;
+}
+
+/* Footer Genres Section */
+.footer-genres {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.footer-genres h3 {
+    font-size: 1.5rem;
+    color: #e91e63;
+    margin-bottom: 10px;
+}
+
+.footer-genres ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-genres li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.3s, color 0.3s;
+}
+
+.footer-genres li a:hover {
+    background: #e91e63;
+    color: #fff;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    footer {
+        padding: 20px 0;
+    }
+
+    .footer-container p {
+        font-size: 0.9rem;
+    }
+
+    footer nav {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    footer nav a {
+        font-size: 1rem;
+        padding: 12px;
+        display: block;  /* Stacks links vertically on mobile */
+    }
+
+    .footer-genres h3 {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+    }
+
+    .footer-genres ul {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0;
+    }
+
+    .footer-genres li a {
+        font-size: 1rem;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+    }
+}
+
+/* Extra small screen (phones in portrait mode) */
+@media (max-width: 480px) {
+    footer {
+        padding: 15px 0;
+    }
+
+    footer nav a {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .footer-genres h3 {
+        font-size: 1.15rem;
+    }
+
+    .footer-genres ul {
+        padding: 0 10px;
+    }
+
+    .footer-genres li a {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+}
+
+        </style>
+    </head>
+    <body>
 <footer>
     <div class="footer-container">
         <p>&copy; 2024 Anime World. All Rights Reserved. Powered by <a href="https://tohost.in">Tohost Cloud Services</a>.</p>
@@ -9,14 +167,15 @@
         </nav>
     </div>
     <div class="footer-genres">
-    <h3>Explore Genres</h3>
-    <ul>
-        <li><a href="genre.php?name=action&page=1">Action</a></li>
-        <li><a href="genre.php?name=shounen&page=1">Shounen</a></li>
-        <li><a href="genre.php?name=romance&page=1">Romance</a></li>
-        <li><a href="genre.php?name=adventure&page=1">Adventure</a></li>
-        <li><a href="genre.php?name=fantasy&page=1">Fantasy</a></li>
-    </ul>
-</div>
-
+        <h3>Explore Genres</h3>
+        <ul>
+            <li><a href="genre.php?name=action&page=1">Action</a></li>
+            <li><a href="genre.php?name=shounen&page=1">Shounen</a></li>
+            <li><a href="genre.php?name=romance&page=1">Romance</a></li>
+            <li><a href="genre.php?name=adventure&page=1">Adventure</a></li>
+            <li><a href="genre.php?name=fantasy&page=1">Fantasy</a></li>
+        </ul>
+    </div>
 </footer>
+</body>
+</html>
