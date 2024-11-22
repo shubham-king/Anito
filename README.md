@@ -63,9 +63,10 @@ We recommend hosting your project with **[Tohost Cloud Services](https://tohost.
    ```
 
 3. Enjoy streaming your favorite anime episodes.
-### Api Used 
--  https://github.com/ghoshRitesh12/aniwatch-api
-   
+### Credits 
+Ritesh -  https://github.com/ghoshRitesh12/aniwatch-api
+
+Thank you hianime for inspiring me 
    
 ## Customization
 - Modify the overlay text by editing the `span` element with ID `welcome-text` in the HTML file.
