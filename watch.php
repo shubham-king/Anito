@@ -22,184 +22,347 @@ if (!$data || !$data['success']) {
     die("Failed to fetch episode sources.");
 }
 
+
+// Check if the response is not empty
+if ($response !== false) {
+    // Decode the JSON response
+    $data = json_decode($response, true); // 'true' converts it to an associative array
+
+    // Check if decoding was successful and the tracks exist
+    if (isset($data['data']['tracks'])) {
+        $tracks = $data['data']['tracks'];
+
+        // Search for the English subtitle file
+        foreach ($tracks as $track) {
+            if (isset($track['label']) && $track['label'] === 'English') {
+                // Get the English subtitle file URL
+                $englishSubtitleUrl = $track['file'];
+
+                // Print or return the subtitle URL
+                // echo "English Subtitle URL: " . $englishSubtitleUrl;
+                break;
+            }
+        }
+    } else {
+        echo "No tracks found in the API response.";
+    }
+} else {
+    echo "Error fetching API response.";
+}
+
+
+
 $videoUrl = $data['data']['sources'][0]['url']; // Use the first available source
-$subtitles = $data['data']['tracks']; // Available subtitles
+$subtitles = $data['data']['tracks'][0]['file']; // Available subtitles
 $introStart = $data['data']['intro']['start']; // Intro start time
 $introEnd = $data['data']['intro']['end']; // Intro end time
 $outroStart = $data['data']['outro']['start']; // Outro start time
 $outroEnd = $data['data']['outro']['end']; // Outro end time
+
+//Print the times
+            // echo "Intro Start: $introStart, Intro End: $introEnd\n";
+            // echo "Outro Start: $outroStart, Outro End: $outroEnd\n";
+         
+         
+            
 include 'header.html';
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watching Episode <?= htmlspecialchars($episodeId) ?></title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-        }
-
-        main.container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        #player-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-            background: #333;
-            padding: 10px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        #video-player {
-            width: 100%;
-            height: 500px;
-            border-radius: 8px;
-        }
-
-        .caption-controls {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-        }
-
-        .caption-controls button {
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            margin-right: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .caption-controls button:hover {
-            background: #45a049;
-        }
-
-        .subtitle-overlay {
-            position: absolute;
-            bottom: 50px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.5em;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-            z-index: 9999;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <meta name="robots" content="noindex, nofollow" />
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<main class="container">
-    <h1>Watching Episode <?= htmlspecialchars($episodeId) ?></h1>
 
-    <section id="player-container">
-        <!-- Video Player -->
-        <video id="video-player" controls autoplay>
-            Your browser does not support the video tag.
-        </video>
+    <style>
+    /* General Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #141414;
+    color: #f1f1f1;
+}
 
-        <!-- Subtitle overlay (inside player) -->
-        <div id="next-subtitle" class="subtitle-overlay"></div>
+/* Header styles (for navigation, if any) */
+header {
+    background-color: #000;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
 
-        <!-- Caption controls (like YouTube) -->
-        <div class="caption-controls">
-            <button id="caption-toggle">Captions: On</button>
-            <select id="caption-language">
-                <?php foreach ($subtitles as $subtitle): ?>
-                    <?php if ($subtitle['kind'] === 'captions'): ?>
-                        <option value="<?= $subtitle['file'] ?>" <?= $subtitle['default'] ? 'selected' : '' ?>>
-                            <?= $subtitle['label'] ?>
-                        </option>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </section>
+/* Video container styling */
+.wrap {
+    position: relative;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
 
-    <p>WELCOME TO SIDDHARTHA ANIME SITE <br> SITE IS IN DEVELOPMENT</p>
-</main>
+/* Player Styling */
+#player {
+    width: 100%;
+    height: 70vh;
+    background-color: #000;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    position: relative;
+}
 
-<script>
-    let video = document.getElementById('video-player');
-    let captionToggle = document.getElementById('caption-toggle');
-    let captionLanguageSelect = document.getElementById('caption-language');
-    let hls = null;
-    let subtitles = <?= json_encode($subtitles) ?>;
-    let currentSubtitleTrack = null;
+/* Button Styling */
+.wrap .btn {
+    position: absolute;
+    top: 15%;
+    right: 10%;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    font-size: 14px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+}
 
-    // Set the initial video source
-    function updateVideoSource(url) {
-        if (hls) {
-            hls.destroy();
-        }
+.wrap .btn:hover {
+    background-color: #45a049;
+}
 
-        if (Hls.isSupported()) {
-            hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play();
-            });
-
-            hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED, function(event, data) {
-                if (data.subtitleTracks.length > 0) {
-                    currentSubtitleTrack = 0;
-                    hls.subtitleTrack = currentSubtitleTrack;
-                }
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = url;
-            video.addEventListener('loadedmetadata', function() {
-                video.play();
-            });
-        }
+/* Media Queries for smaller screens */
+@media screen and (max-width: 768px) {
+    #player {
+        height: 60vh;
+        width: 50vh;
     }
 
-    // Toggle captions on/off
-    captionToggle.addEventListener('click', function() {
-        if (video.textTracks[0]) {
-            const track = video.textTracks[0];
-            track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
-            captionToggle.textContent = track.mode === 'showing' ? 'Captions: On' : 'Captions: Off';
+    .wrap .btn {
+        top: 10%;
+        right: 5%;
+        font-size: 12px;
+    }
+}
+
+/* Subtitle Container Styles (Positioning and Styling) */
+#skipIntro {
+    z-index: 3;
+    position: absolute;
+    bottom: 20%;
+    right: 5%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+      /*Hidden initially */
+}
+
+#skipIntro:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+#skipOutro {
+    z-index: 3;
+    position: absolute;
+    bottom: 20%;
+    right: 5%;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+      /*Hidden initially */
+}
+
+#skipOutro:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+
+
+
+/* JW Player Controls Styling */
+.jwplayer .jw-controlbar {
+    background: rgba(98, 64, 46, 0.5) !important;
+    border-radius: 0 0 10px 10px;
+}
+
+.jwplayer .jw-icon-rewind, .jwplayer .jw-icon-next {
+    filter: invert(100%);
+}
+
+.jwplayer .jw-playbar {
+    background-color: #333 !important;
+    border-radius: 5px;
+}
+
+/* Add a loading animation for the video player */
+/*#player:before {*/
+/*    content: "Loading...";*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    left: 50%;*/
+/*    transform: translate(-50%, -50%);*/
+/*    font-size: 20px;*/
+/*    color: #fff;*/
+/*    display: block;*/
+/*    z-index: 20;*/
+/*}*/
+
+    </style>
+<div class="wrap">
+    <div id="player"></div>
+    <button id="skipIntro">Skip Intro</button>
+    <button id="skipOutro">Skip Outro</button>
+</div>
+
+<script src="jw.js"></script>
+
+<?php
+// Sample JSON data
+$data = [
+    "intro" => [
+        "start" => $introStart, // Intro start time in seconds
+        "end" => $introEnd // Intro end time in seconds
+    ],
+    "outro" => [
+        "start" => $outroStart, // Outro start time in seconds
+        "end" => $outroEnd // Outro end time in seconds
+    ]
+];
+
+// Function to convert seconds to WebVTT timestamp format (HH:MM:SS.mmm)
+function secondsToWebVTT($seconds) {
+    $hours = floor($seconds / 3600);
+    $minutes = floor(($seconds % 3600) / 60);
+    $seconds = round($seconds % 60, 3);
+    return sprintf("%02d:%02d:%06.3f", $hours, $minutes, $seconds);
+}
+
+// Generate WebVTT content dynamically
+$vttContent = "WEBVTT\n\n";
+foreach ($data as $chapter => $times) {
+    $start = secondsToWebVTT($times['start']);
+    $end = secondsToWebVTT($times['end']);
+    $title = ucfirst($chapter);  // Capitalize the chapter name
+    $vttContent .= "{$start} --> {$end}\n";
+    $vttContent .= "{$title}\n\n";
+}
+
+// Output the WebVTT content to be used in the JW Player
+echo "<script>const chaptersVtt = `{$vttContent}`;</script>";
+
+// Output the $data array as JSON for JavaScript
+echo "<script>const skipData = " . json_encode($data) . ";</script>";
+?>
+
+<script>
+    const playerInstance = jwplayer("player").setup({
+        controls: true,
+        displaytitle: true,
+        displaydescription: true,
+        abouttext: "Anixtv.in",
+        aboutlink: "https://anixtv.in",
+        autostart: true,
+        skin: {
+            name: "netflix"
+        },
+        logo: {
+            file: "",
+            link: ""
+        },
+        playlist: [{
+            title: `<?php echo $episodeId; ?>`,
+            description: "This Player is made by Siddhartha Tiwari",
+            image: "https://anixtv.in/player/anime.jpg",
+            sources: [{ file: `<?php echo $videoUrl; ?>` }],
+            tracks: [
+                {
+                    file: `<?php echo $englishSubtitleUrl; ?>`, // Replace with the URL to your subtitle file
+                    kind: "captions",
+                    label: "English",
+                    default: true
+                },
+                {
+                    file: chaptersVtt, // Use the dynamically generated WebVTT content
+                    kind: "chapters"
+                }
+            ]
+        }],
+        advertising: {
+            client: "vast",
+            schedule: [{
+                offset: "pre",
+                tag: ""
+            }]
         }
     });
 
-    // Change subtitle language
-    captionLanguageSelect.addEventListener('change', function() {
-        let selectedFile = captionLanguageSelect.value;
-        let track = video.addTextTrack('subtitles', 'English', 'en');
-        track.mode = 'showing';
-        track.src = selectedFile;
+    const skipIntroButton = document.getElementById("skipIntro");
+    const skipOutroButton = document.getElementById("skipOutro");
+
+    // Get the intro and outro times from PHP
+    const introStart = skipData.intro.start;
+    const introEnd = skipData.intro.end;
+    const outroStart = skipData.outro.start;
+    const outroEnd = skipData.outro.end;
+
+    // Event listener for "Skip Intro" button
+    skipIntroButton.addEventListener("click", function () {
+        playerInstance.seek(introEnd); // Seek to the intro end time
     });
 
-    // Initial video setup
-    updateVideoSource('<?= $videoUrl ?>');
+    // Event listener for "Skip Outro" button
+    skipOutroButton.addEventListener("click", function () {
+        const videoDuration = playerInstance.getDuration(); // Get total video duration
+        const skipToTime = outroEnd >= videoDuration ? videoDuration - 1 : outroEnd; // Ensure we don't go beyond the video duration
+        playerInstance.seek(skipToTime); // Seek to the end of the outro
+    });
+
+    // Update button visibility based on current time
+    playerInstance.on("time", function(event) {
+        const currentTime = event.position;
+
+        // Show "Skip Intro" button during the intro
+        if (currentTime >= introStart && currentTime <= introEnd) {
+            skipIntroButton.style.display = "block";
+        } else {
+            skipIntroButton.style.display = "none";
+        }
+
+        // Show "Skip Outro" button during the outro
+        if (currentTime >= outroStart && currentTime <= outroEnd) {
+            skipOutroButton.style.display = "block";
+        } else {
+            skipOutroButton.style.display = "none";
+        }
+    });
+
+    playerInstance.on("ready", function() {
+        console.log("JW Player is ready!");
+    });
 </script>
+
+
+
 
 <?php include 'footer.html'; ?>
 
 </body>
+
 </html>
+
+
